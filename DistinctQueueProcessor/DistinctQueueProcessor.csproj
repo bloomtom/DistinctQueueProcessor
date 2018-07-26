@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>bloomtom</Authors>
+    <Product>DQP</Product>
+    <Description>A multi-threaded queue processor base class. Processes added items from a queue in a parallel manner, and provides an index of running and waiting tasks. All operations on the public interface are fully thread-safe.</Description>
+    <Copyright>MIT</Copyright>
+    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/bloomtom/DistinctQueueProcessor</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/bloomtom/DistinctQueueProcessor</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
+</Project>
