@@ -10,6 +10,8 @@
     <RepositoryUrl>https://github.com/bloomtom/DistinctQueueProcessor</RepositoryUrl>
     <PackageProjectUrl>https://github.com/bloomtom/DistinctQueueProcessor</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageId>bloomtom.DistinctQueueProcessor</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
