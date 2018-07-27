@@ -7,7 +7,7 @@ This library was built to manage a large queue of long running parallel processe
 
 Package Name | Target Framework | Version
 ---|---|---
-[DistinctQueueProcessor](https://www.nuget.org/packages/DistinctQueueProcessor) | .NET Standard 2.0 | ![NuGet](https://img.shields.io/nuget/v/DistinctQueueProcessor.svg)
+[DistinctQueueProcessor](https://www.nuget.org/packages/bloomtom.DistinctQueueProcessor) | .NET Standard 2.0 | ![NuGet](https://img.shields.io/nuget/v/bloomtom.DistinctQueueProcessor.svg)
 
 ## Usage
 The main contents of this library are in a single abstract class, `DQP.DistinctQueueProcessor<T>`. Create your own derivative class which overrides the following required methods:
