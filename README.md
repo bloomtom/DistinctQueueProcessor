@@ -14,7 +14,7 @@ The main contents of this library are in a single abstract class, `DQP.DistinctQ
  - `Process(T item)`
    - Do your work here. This method is run on a threaded task. 
  - `Error(T item, Exception ex)`
-   - Called when an exception is caught from `Process(T item)`
+   - Called when an exception is caught from `Process(T item)`. Throwing an exception here will kill the running worker so take care.
 
 #### Usage Example
 ```csharp
@@ -22,7 +22,7 @@ class DqpExample : DistinctQueueProcessor<string>
 {
     protected override void Error(string item, Exception ex)
     {
-        throw ex;
+        Console.Error.WriteLine(ex.ToString());
     }
 
     protected override void Process(string item)
