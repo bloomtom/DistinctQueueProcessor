@@ -123,7 +123,7 @@ namespace DQP
         }
 
         /// <summary>
-        /// Blocks the caller using Sleep(50) until all queued items are complete.
+        /// Blocks the caller using Sleep(10) until all queued items are complete.
         /// </summary>
         public void WaitForCompletion()
         {
