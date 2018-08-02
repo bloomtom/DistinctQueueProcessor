@@ -16,7 +16,10 @@ The main contents of this library are in a single abstract class, `DQP.DistinctQ
  - `Error(T item, Exception ex)`
    - Called when an exception is caught from `Process(T item)`. Throwing an exception here will kill the running worker so take care.
 
-#### Usage Example
+Also provided is an wrapper which takes Actions in the constructor. See the examples below for more detail.
+
+#### Inheritance Example
+Create a new class inheriting from `DistinctQueueProcessor<T>` where `T` is the type of object you want to enqueue.
 ```csharp
 class DqpExample : DistinctQueueProcessor<string>
 {
@@ -37,3 +40,24 @@ You'd then use your class as follows:
 var example = new DqpExample();
 example.AddItem("Hello, world!");
 ```
+#### Action Example
+
+If inheriting from `DistinctQueueProcessor` in a custom class is too heavy for your use case, `ActionQueue` can be used instead. It's a simple wrapper around the base class which takes two action as constructor parameters.
+
+```csharp
+var actionQueue = new ActionQueue<string>(
+	new Action<string>(x =>
+	{
+		Console.WriteLine(item);
+	}),
+	new Action<string, Exception>((x, ex) =>
+	{
+		Console.Error.WriteLine(ex.ToString());
+	}));
+    
+actionQueue.AddItem("Hello, world!");
+```
+
+## Gotchas
+
+Internally the queue is indexed using a `Dictionary<string, T>`, where the key is `T.ToString()`. Ensure your `T` has a `ToString` implementation which returns short unique values.

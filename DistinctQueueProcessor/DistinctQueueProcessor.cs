@@ -106,6 +106,30 @@ namespace DQP
             return queueIndex.ContainsKey(key);
         }
 
+        /// <summary>
+        /// Blocks the caller using Sleep(10) until all queued items are complete or the timeout is exceeded.
+        /// Returns immediately if no items are queued or running.
+        /// </summary>
+        public void WaitForCompletion(TimeSpan timeout)
+        {
+            if (ItemsQueued.Count == 0) { return; }
+
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            while (ItemsQueued.Count > 0 && sw.Elapsed < timeout)
+            {
+                System.Threading.Thread.Sleep(10);
+            }
+        }
+
+        /// <summary>
+        /// Blocks the caller using Sleep(50) until all queued items are complete.
+        /// </summary>
+        public void WaitForCompletion()
+        {
+            WaitForCompletion(TimeSpan.MaxValue);
+        }
+
         private void RunWorker()
         {
             System.Threading.Interlocked.Increment(ref runningWorkers);

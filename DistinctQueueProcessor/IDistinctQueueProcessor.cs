@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DQP
 {
@@ -9,5 +10,7 @@ namespace DQP
 
         void AddItem(T item);
         bool CheckQueue(string key);
+        void WaitForCompletion(TimeSpan t);
+        void WaitForCompletion();
     }
 }

@@ -1,3 +1,4 @@
+using DQP;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ namespace DQPTest
             harness.AddItem(new Item("8", ItemValue.Succeed));
             harness.AddItem(new Item("9", ItemValue.Succeed));
 
-            WaitForCompletion(harness);
+            harness.WaitForCompletion();
 
             Assert.Equal(2, harness.errors);
             Assert.Equal(3, harness.processed[ItemValue.Win]);
@@ -37,7 +38,7 @@ namespace DQPTest
             {
                 harness.AddItem(new Item(i.ToString(), ItemValue.Win));
             }
-            WaitForCompletion(harness);
+            harness.WaitForCompletion();
             Assert.Equal(3 + expected, harness.processed[ItemValue.Win]);
         }
 
@@ -85,7 +86,7 @@ namespace DQPTest
             harness.Parallelization = 1;
             harness.AddItem(new Item("???", ItemValue.Win));
 
-            WaitForCompletion(harness);
+            harness.WaitForCompletion();
             Assert.Equal((expected * 4) + 1, harness.processed[ItemValue.Win]);
             Assert.Equal(expected, harness.errors);
         }
@@ -113,7 +114,7 @@ namespace DQPTest
             System.Threading.Thread.Sleep(1);
             harness.AddItem(new Item("9", ItemValue.Succeed));
 
-            WaitForCompletion(harness);
+            harness.WaitForCompletion();
 
             Assert.Equal(2, harness.errors);
             Assert.Equal(3, harness.processed[ItemValue.Win]);
@@ -158,7 +159,7 @@ namespace DQPTest
 
             // After starting a worker items should be complete.
             harness.ManualStartWorker();
-            WaitForCompletion(harness);
+            harness.WaitForCompletion();
             Assert.Equal(3, harness.processed[ItemValue.Win]);
 
             // Cause another stall.
@@ -177,18 +178,63 @@ namespace DQPTest
             harness.AddItem(new Item("2", ItemValue.Win));
 
             // Work should be done after wait.
-            WaitForCompletion(harness);
+            harness.WaitForCompletion();
             Assert.Equal(2, harness.processed[ItemValue.Win]);
         }
 
-        private static void WaitForCompletion(DQPTestHarness harness)
+        /// <summary>
+        /// Ensures wait for completion expiration functions as expected.
+        /// </summary>
+        [Fact]
+        public void WaitTest()
         {
-            int i = 0;
-            while (harness.ItemsQueued.Count > 0 && i < 10000)
+            var harness = new DQPTestHarness
             {
-                System.Threading.Thread.SpinWait(1000);
-                i++;
-            }
+                Parallelization = 0 // Start stalled
+            };
+            harness.AddItem(new Item("1", ItemValue.Win));
+
+            var sw = new System.Diagnostics.Stopwatch();
+            sw.Start();
+            harness.WaitForCompletion(TimeSpan.FromMilliseconds(20));
+            Assert.True(sw.ElapsedMilliseconds > 10);
+            Assert.True(harness.ItemsQueued.Count > 0);
+
+            // Enable processing.
+            harness.Parallelization = 1;
+            harness.ManualStartWorker();
+
+            harness.WaitForCompletion(TimeSpan.FromMinutes(1));
+            Assert.True(harness.ItemsQueued.Count == 0);
+        }
+
+        /// <summary>
+        /// Does a basic test on ActionQueue to ensure it processes items as expected.
+        /// </summary>
+        [Fact]
+        public void ActionQueueTest()
+        {
+            int success = 0;
+            int failure = 0;
+
+            var actionQueue = new ActionQueue<bool>(
+                new Action<bool>(x =>
+                {
+                    if (x) { System.Threading.Interlocked.Increment(ref success); } else { throw new ArgumentException(); }
+                }),
+                new Action<bool, Exception>((x, ex) =>
+                {
+                    System.Threading.Interlocked.Increment(ref failure);
+                }));
+
+            actionQueue.AddItem(true);
+            actionQueue.AddItem(false);
+            actionQueue.WaitForCompletion();
+            actionQueue.AddItem(true);
+            actionQueue.WaitForCompletion();
+
+            Assert.Equal(2, success);
+            Assert.Equal(1, failure);
         }
     }
 }
