@@ -12,7 +12,11 @@
     <RepositoryType>git</RepositoryType>
     <PackageId>bloomtom.DistinctQueueProcessor</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard2.0\DistinctQueueProcessor.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

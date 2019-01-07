@@ -21,11 +21,19 @@ namespace DQP
             this.error = error;
         }
 
+        /// <summary>
+        /// This is called whenever an exception is thrown internally when processing an item, and will run the error action given in the constructor. Unhandled exceptions in Process(item) will also cause this to be called.
+        /// This method will be called from a task thread; Take care to ensure thread safety.
+        /// </summary>
         protected override void Error(T item, Exception ex)
         {
             error.Invoke(item, ex);
         }
 
+        /// <summary>
+        /// This will run the process action given in the constructor on items when they enter the run queue. The given item is dequeued upon return.
+        /// This method will be called from a task thread; Take care to ensure thread safety.
+        /// </summary>
         protected override void Process(T item)
         {
             process.Invoke(item);
