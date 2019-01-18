@@ -47,7 +47,9 @@ namespace DQP
         protected int Parallelization { get { return parallelization; } set { lock (queueAppendLock) { parallelization = value < 0 ? 0 : value; } } }
         private volatile int parallelization = 1;
 
-        // Tracks how many threads are currently running. When zero, no conversion is taking place.
+        /// <summary>
+        /// Tracks how many threads are currently running. When zero, no conversion is taking place.
+        /// </summary>
         protected int RunningWorkers { get { return runningWorkers; } }
         private volatile int runningWorkers = 0;
 
@@ -138,7 +140,7 @@ namespace DQP
                 try
                 {
                     // Pop one item from the queue and convert it.
-                    while (queue.TryDequeue(out T item))
+                    while (parallelization > 0 && queue.TryDequeue(out T item))
                     {
                         itemsBeingProcessed.TryAdd(item.ToString(), item);
 
