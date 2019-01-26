@@ -13,7 +13,8 @@
     <PackageId>bloomtom.DistinctQueueProcessor</PackageId>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <Version>1.1.4</Version>
+    <Version>1.1.5</Version>
+	<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
   
 </Project>
