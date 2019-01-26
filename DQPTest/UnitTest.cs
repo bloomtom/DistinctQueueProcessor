@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Xunit;
 
 namespace DQPTest
@@ -235,6 +236,49 @@ namespace DQPTest
 
             Assert.Equal(2, success);
             Assert.Equal(1, failure);
+        }
+
+        /// <summary>
+        /// Tests reading from the queue while it's being written to.
+        /// </summary>
+        [Fact]
+        public void ReaderWriterTest()
+        {
+            var queue = new DQPTestHarness()
+            {
+                Parallelization = 8
+            };
+
+            var writer = new Action(() =>
+            {
+                for (int i = 0; i < 10000; i++)
+                {
+                    queue.AddItem(new Item(i.ToString(), ItemValue.Succeed));
+                }
+            });
+
+            var reader = new Action(() =>
+            {
+                for (int i = 0; i < 1000; i++)
+                {
+                    foreach (var item in queue.ItemsProcessing.Values)
+                    {
+                        Assert.Equal(ItemValue.Succeed, item.Value);
+                    }
+                    foreach (var item in queue.ItemsQueued.Values)
+                    {
+                        Assert.Equal(ItemValue.Succeed, item.Value);
+                    }
+                    System.Threading.Thread.Yield();
+                }
+            });
+
+            var writeThread = new System.Threading.Thread(new System.Threading.ThreadStart(writer));
+            var readThread = new System.Threading.Thread(new System.Threading.ThreadStart(reader));
+            readThread.Start();
+            writeThread.Start();
+            writeThread.Join();
+            readThread.Join();
         }
     }
 }
